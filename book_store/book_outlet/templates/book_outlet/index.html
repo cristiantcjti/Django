@@ -1,0 +1,19 @@
+{% extends "book_outlet/base.html" %}
+
+{% block title %}
+    All Books
+{% endblock  %}
+
+{% block content %}
+    <ul>
+        {% for book in books  %}
+            <!--<li><a href="{% url "book-detail" book.id %}">{{ book.title }}</a> (Rating: {{ book.rating}}) </li> This way works to get the url--> 
+            <li><a href="{{ book.get_absolute_url }}">{{ book.title }}</a> (Rating: {{ book.rating}}) </li> <!-- but here is other way, which is set in models.py-->
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <p>Total number of books: {{ total_number_of_books }}</p>
+    <p>Average Rating: {{ average_rating.rating__avg}}</p>
+{% endblock  %}
