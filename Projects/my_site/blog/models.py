@@ -27,7 +27,7 @@ class Author(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=150)
     excerpt = models.CharField(max_length=200)
-    image_name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to="posts", null=True)
     date = models.DateField(auto_now=True)
     # when unique=Ture automatically db_index is True.
     slug = models.SlugField(unique=True, db_index=True)
@@ -35,3 +35,10 @@ class Post(models.Model):
     author = models.ForeignKey(
         Author, on_delete=models.SET_NULL, null=True, related_name="posts")
     tags = models.ManyToManyField(Tag)
+
+class Comment(models.Model):
+    user_name = models.CharField(max_length=120)
+    user_email = models.EmailField()
+    text = models.TextField(max_length=400)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    
