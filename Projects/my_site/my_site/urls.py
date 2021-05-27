@@ -25,4 +25,5 @@ urlpatterns = [
     # like http://localhost:8000/ the remaining route will be determined by urls.py from blog folder
     path("", include("blog.urls"))
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
+  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
