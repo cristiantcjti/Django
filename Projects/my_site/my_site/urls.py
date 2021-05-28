@@ -21,8 +21,6 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # include is the way to tell django to go to folder blog and attach the urls.py to the end of the main route.
-    # like http://localhost:8000/ the remaining route will be determined by urls.py from blog folder
     path("", include("blog.urls"))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
