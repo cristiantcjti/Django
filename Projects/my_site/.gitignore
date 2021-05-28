@@ -41,6 +41,7 @@ pip-delete-this-directory.txt
 *.log
 local_settings.py
 db.sqlite3
+SECRET_KEY
 
 
 # pyenv
@@ -48,9 +49,9 @@ db.sqlite3
 
 # Environments
 .env
-#.venv
+.venv
 env/
-#venv/
+venv/
 ENV/
 env.bak/
 venv.bak/
