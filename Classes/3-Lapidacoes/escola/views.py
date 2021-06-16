@@ -25,6 +25,7 @@ class CursosViewSet(viewsets.ModelViewSet):
     """Exibindo todos os cursos"""
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
+    http_method_names = ['get', 'post', 'put', 'path']
 
     # Cria o Location do response do browser, fazendo a API auto-documentada
     def create(self, request):
