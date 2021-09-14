@@ -1,9 +1,15 @@
 from django.utils.translation import activate
 from rest_framework import serializers
-from watchlist_app.models import WatchList, StreamPlatform
+from watchlist_app.models import WatchList, StreamPlatform, Review
 
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = '__all__'
 
 class WatchSerializer(serializers.ModelSerializer):
+    reviews = ReviewSerializer(many=True, read_only=True)
     class Meta:
         model = WatchList
         fields = "__all__"
@@ -13,7 +19,7 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
     watchlist = WatchSerializer(many=True, read_only=True) # Ruturn all data
     #watchlist = serializers.StringRelatedField(many=True, read_only=True) # Return only the title
     #watchlist = serializers.PrimaryKeyRelatedField(many=True, read_only=True) # Return the primary key
-    # watchlist = serializers.HyperlinkedRelatedField(
+    #watchlist = serializers.HyperlinkedRelatedField(
     #     many=True, 
     #     read_only=True, 
     #     view_name="movie-detail" 
@@ -26,28 +32,28 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
 #####################################
 #### serializers.ModelSerializer ####
 #####################################
+'''
+class WatchSerializer(serializers.ModelSerializer):
+    len_name = serializers.SerializerMethodField()
+    class Meta:
+        model = WatchList
+        fields = "__all__"
 
-# class WatchSerializer(serializers.ModelSerializer):
-#     len_name = serializers.SerializerMethodField()
-#     class Meta:
-#         model = WatchList
-#         fields = "__all__"
+    def get_len_name(self, obj: WatchList):
+        return len(obj.name)
 
-#     def get_len_name(self, obj: WatchList):
-#         return len(obj.name)
+    #Object validation
+    def validate(self, data: dict)-> dict:
+        if data['name'] == data['description']:
+            raise serializers.ValidationError("Name and Description should be different")
+        return data        
 
-#     #Object validation
-#     def validate(self, data: dict)-> dict:
-#         if data['name'] == data['description']:
-#             raise serializers.ValidationError("Name and Description should be different")
-#         return data        
-
-#     #Field validation
-#     def validate_name(self, value: str)-> dict:
-#         if len(value) < 2:
-#             raise serializers.ValidationError("Name is too short!")
-#         return value
-
+    #Field validation
+    def validate_name(self, value: str)-> dict:
+        if len(value) < 2:
+            raise serializers.ValidationError("Name is too short!")
+        return value
+'''
 ################################
 #### serializers.Serializer ####
 ################################
