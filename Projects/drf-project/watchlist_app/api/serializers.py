@@ -3,16 +3,25 @@ from rest_framework import serializers
 from watchlist_app.models import WatchList, StreamPlatform
 
 
-class StreamPlatformSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StreamPlatform
-        fields = "__all__"
-
 class WatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = WatchList
         fields = "__all__"
 
+
+class StreamPlatformSerializer(serializers.ModelSerializer):
+    watchlist = WatchSerializer(many=True, read_only=True) # Ruturn all data
+    #watchlist = serializers.StringRelatedField(many=True, read_only=True) # Return only the title
+    #watchlist = serializers.PrimaryKeyRelatedField(many=True, read_only=True) # Return the primary key
+    # watchlist = serializers.HyperlinkedRelatedField(
+    #     many=True, 
+    #     read_only=True, 
+    #     view_name="movie-detail" 
+    #     ) # Return a link to the movie
+
+    class Meta:
+        model = StreamPlatform
+        fields = "__all__"
 
 #####################################
 #### serializers.ModelSerializer ####
