@@ -24,7 +24,7 @@ urlpatterns = [
     # path('stream/<int:pk>/', StreamPlatformDetailAV.as_view(), name='stream-detail'),
     
     path('<int:pk>/review-create/', ReviewCreate.as_view(), name='review-create'),
-    path('<int:pk>/review/', ReviewList.as_view(), name='review-detail'),
+    path('<int:pk>/reviews/', ReviewList.as_view(), name='review-detail'),
     path('review/<int:pk>/', ReviewDetail.as_view(), name='review-detail'),
 
     # path('review/', ReviewList.as_view(), name='review-list'),
