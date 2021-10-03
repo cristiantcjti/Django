@@ -8,13 +8,29 @@ from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+
 from watchlist_app.models import WatchList, StreamPlatform, Review
 from watchlist_app.api.serializers import WatchSerializer, StreamPlatformSerializer, ReviewSerializer
 from watchlist_app.api.permissions import IsAdminOrReadOnly, IsReviewUserOrReadOnly
 
+from watchlist_app.api.throttling import ReviewCreateThrottle, ReviewListThrottle
+
+class UserReview(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+
+    # def get_queryset(self):
+    #     username = self.kwargs['username']
+    #     return Review.objects.filter(review_user__username=username)
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        return Review.objects.filter(review_user__username=username)
+
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewCreateThrottle]
 
     def get_queryset(self):
         return Review.objects.all()
@@ -42,7 +58,8 @@ class ReviewList(generics.ListAPIView):
     #queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     # permission_classes = [IsAuthenticatedOrReadOnly]
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewListThrottle, AnonRateThrottle]    
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -52,7 +69,9 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer  
     permission_classes = [IsReviewUserOrReadOnly]  
-
+    # throttle_classes = [UserRateThrottle, AnonRateThrottle]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'review-detail'
 
 ######################
 #### Using Mixins ####
