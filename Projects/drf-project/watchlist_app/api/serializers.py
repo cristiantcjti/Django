@@ -10,15 +10,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         exclude = ('watchlist',)
         #fields = '__all__'
 
-class WatchSerializer(serializers.ModelSerializer):
-    reviews = ReviewSerializer(many=True, read_only=True)
+class WatchListSerializer(serializers.ModelSerializer):
+    #reviews = ReviewSerializer(many=True, read_only=True)
+    platform = serializers.CharField(source='platform.name')
     class Meta:
         model = WatchList
         fields = "__all__"
 
 
 class StreamPlatformSerializer(serializers.ModelSerializer):
-    watchlist = WatchSerializer(many=True, read_only=True) # Ruturn all data
+    watchlist = WatchListSerializer(many=True, read_only=True) # Ruturn all data
     #watchlist = serializers.StringRelatedField(many=True, read_only=True) # Return only the title
     #watchlist = serializers.PrimaryKeyRelatedField(many=True, read_only=True) # Return the primary key
     #watchlist = serializers.HyperlinkedRelatedField(
@@ -35,7 +36,7 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
 #### serializers.ModelSerializer ####
 #####################################
 '''
-class WatchSerializer(serializers.ModelSerializer):
+class WatchListSerializer(serializers.ModelSerializer):
     len_name = serializers.SerializerMethodField()
     class Meta:
         model = WatchList

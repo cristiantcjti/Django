@@ -1,4 +1,6 @@
+from django.db.models import query
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -9,9 +11,11 @@ from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+from rest_framework.filters import SearchFilter, OrderingFilter 
+
 
 from watchlist_app.models import WatchList, StreamPlatform, Review
-from watchlist_app.api.serializers import WatchSerializer, StreamPlatformSerializer, ReviewSerializer
+from watchlist_app.api.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from watchlist_app.api.permissions import IsAdminOrReadOnly, IsReviewUserOrReadOnly
 
 from watchlist_app.api.throttling import ReviewCreateThrottle, ReviewListThrottle
@@ -59,7 +63,11 @@ class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
     # permission_classes = [IsAuthenticatedOrReadOnly]
     permission_classes = [IsAuthenticated]
-    throttle_classes = [ReviewListThrottle, AnonRateThrottle]    
+    throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['review_user__username', 'active']    
+    search_fields = ['review_user__username']
+
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -107,6 +115,10 @@ class StreamPlatformVS(viewsets.ModelViewSet):
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
     permission_classes = [IsAdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['name']    
+    search_fields = ['name']
+    ordering_fields = ['name']
 
 # class StreamPlatformVS(viewsets.ReadOnlyModelViewSet):
 #     queryset = StreamPlatform.objects.all()
@@ -184,16 +196,23 @@ class StreamPlatformDetailAV(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class WatchListGV(generics.ListAPIView):
+    queryset = WatchList.objects.all()
+    serializer_class = WatchListSerializer
+    
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['avg_rating']
+
 class WatchListAV(APIView):
     permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         movies = WatchList.objects.all()
-        serializer = WatchSerializer(movies, many=True)
+        serializer = WatchListSerializer(movies, many=True)
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        serializer = WatchSerializer(data=request.data)
+        serializer = WatchListSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -210,12 +229,12 @@ class WatchDetailAV(APIView):
         except WatchList.DoesNotExist:
             return Response({'Error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = WatchSerializer(movie)
+        serializer = WatchListSerializer(movie)
         return Response(serializer.data)
 
     def put(self, request, pk: str) -> dict:
         movie = WatchList.objects.get(pk=pk)
-        serializer = WatchSerializer(movie, data=request.data)
+        serializer = WatchListSerializer(movie, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
