@@ -11,12 +11,13 @@ from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
-from rest_framework.filters import SearchFilter, OrderingFilter 
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 
 from watchlist_app.models import WatchList, StreamPlatform, Review
 from watchlist_app.api.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from watchlist_app.api.permissions import IsAdminOrReadOnly, IsReviewUserOrReadOnly
+from watchlist_app.api.pagination import WatchListLimitOffsetPagination, WatchListPagination, WatchListCursorPagination
 
 from watchlist_app.api.throttling import ReviewCreateThrottle, ReviewListThrottle
 
@@ -199,9 +200,12 @@ class StreamPlatformDetailAV(APIView):
 class WatchListGV(generics.ListAPIView):
     queryset = WatchList.objects.all()
     serializer_class = WatchListSerializer
+    #pagination_class = WatchListPagination
+    #pagination_class = WatchListLimitOffsetPagination
+    pagination_class = WatchListCursorPagination
     
-    filter_backends = [OrderingFilter]
-    ordering_fields = ['avg_rating']
+    # filter_backends = [OrderingFilter]
+    # ordering_fields = ['avg_rating']
 
 class WatchListAV(APIView):
     permission_classes = [IsAdminOrReadOnly]
