@@ -209,6 +209,7 @@ class WatchListGV(generics.ListAPIView):
 
 class WatchListAV(APIView):
     permission_classes = [IsAdminOrReadOnly]
+    throttle_classes = [AnonRateThrottle]
 
     def get(self, request, *args, **kwargs):
         movies = WatchList.objects.all()
@@ -226,6 +227,7 @@ class WatchListAV(APIView):
 
 class WatchDetailAV(APIView):
     permission_classes = [IsAdminOrReadOnly]
+    throttle_classes = [AnonRateThrottle]
 
     def get(self, request, pk: str) -> dict:
         try:
